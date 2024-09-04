@@ -1,0 +1,150 @@
+8 bits of data into 7 bits for midi sysex
+https://www.echevarria.io/blog/midi-sysex/index.html
+  - converted to pdf in this repo somewhere
+
+from ep update utility
+var Pa = class {
+        constructor(e) {
+            if (this.offset = 64,
+            this.data = e,
+            this.chunk_number = 0,
+            this.dfu_max_chunk_size = 235,
+            e[0] != 186 || e[1] != 190 || e[2] != 202 || e[3] != 254)
+                throw new Error("not a valid firmware file");
+            this.firmware_type = e[4],
+            this.checksum = [e[5], e[6]],
+            this.version = [e[7], e[8], e[9], e[10], e[11], e[12], e[13], e[14]],
+            this.sku = [e[15], e[16], e[17], e[18]],
+            this.size = [this.data.length - 64 >> 24 & 255, this.data.length - 64 >> 16 & 255, this.data.length - 64 >> 8 & 255, this.data.length - 64 & 255]
+        }
+        static async factory(e) {
+            if (typeof e == "string") {
+                let t = await Pa.fetchFirmware(e);
+                return new Pa(t)
+            } else {
+                if (e instanceof File)
+                    return new Pa(new Uint8Array(await e.arrayBuffer()));
+                throw Error("unknown firmware")
+            }
+        }
+        static async fetchFirmware(e) {
+            let t = await fetch(e);
+            return new Uint8Array(await t.arrayBuffer())
+        }
+        getPrepareCommand() {
+            throw "unexpected firmware type 0x" + this.firmware_type.toString(16)
+        }
+        getPrepareData() {
+            return [this.getPrepareCommand(), ...this.version, 0, ...this.sku]
+        }
+        setChunkSize(e) {
+            this.dfu_max_chunk_size = Math.ceil(e * (7 / 8)) - 12
+        }
+        getSkuString() {
+            let e = this.sku[0] << 24 | this.sku[1] << 16 | this.sku[2] << 8 | this.sku[3]
+              , t = e >> 14 & 1023
+              , r = e >> 10 & 15 ? "??" : "AS"
+              , i = e & 1023;
+            return ["TE", `${t}`.padStart(3, "0"), r, `${i}`.padStart(3, "0")].join("")
+        }
+        getVersionString() {
+            let e = this.version[0] << 8 | this.version[1]
+              , t = this.version[2] << 8 | this.version[3]
+              , r = this.version[4] << 8 | this.version[5]
+              , i = this.version[6] << 8 | this.version[7]
+              , n = `${e}.${t}.${r}`;
+            return i !== 0 ? `${n}+${i}` : n
+        }
+        nextChunkData() {
+            let e = this.data.subarray(this.offset, this.offset + this.dfu_max_chunk_size);
+            return this.offset += this.dfu_max_chunk_size,
+            e
+        }
+        nextChunkPayload() {
+            let e = this.nextChunkData();
+            if (e.length === 0)
+                return [];
+            let t = new Uint8Array(e.length + 2);
+            return t[0] = dt.DFU_CHUNK,
+            t[1] = this.chunk_number++ % 256,
+            t.set(e, 2),
+            t
+        }
+        percent() {
+            return Math.floor(this.offset / this.data.length * 100)
+        }
+    }
+      , dt = {
+        DFU: 3,
+        DFU_ENTER: 1,
+        DFU_ENTER_MIDI: 1,
+        DFU_BEGIN: 2,
+        DFU_BEGIN_APP: 176,
+        DFU_CHUNK: 3,
+        DFU_PERFORM: 4,
+        DFU_EXIT: 5,
+        BAD_REQUEST: 127,
+        DFU_ENTER_RESPONSE_READY: 64
+    }
+      , P2 = class {
+        constructor() {}
+        async firmware_info(e) {
+            let t = await Pa.factory(e);
+            return {
+                version: t.getVersionString(),
+                sku: t.getSkuString()
+            }
+        }
+        async perform(e, t, r) {
+            var i;
+            if (!Midi.hasDevice(e))
+                throw new Error(`could not find device with serial ${e} for DFU`);
+            let n = !1
+              , a = await Pa.factory(t)
+              , s = a.getVersionString();
+            console.log(`upgrading to version ${s}`);
+            try {
+                let v = await Midi.sendAndReceiveTeSysexBySerial(e, dt.DFU, [dt.DFU_BEGIN, ...a.version, dt.DFU_BEGIN_APP, ...a.sku, ...a.size], null);
+                a.setChunkSize(v.data[0] << 8 || v.data[1]),
+                v.data[0] === dt.DFU_ENTER_RESPONSE_READY && (n = !0)
+            } catch (v) {
+                b2(v) && ((i = v.sysexMsg) == null ? void 0 : i.status) === 3 && await Midi.ensureDeviceInBootloader(e);
+                let g = await Midi.sendAndReceiveTeSysexBySerial(e, dt.DFU, [dt.DFU_BEGIN, ...a.version, dt.DFU_BEGIN_APP, ...a.sku, ...a.size], null);
+                a.setChunkSize(g.data[0] << 8 || g.data[1])
+            }
+            let o = new Date
+              , l = !1;
+            for (; ; ) {
+                let v = [];
+                for (let g = 0; g < 1; g++) {
+                    let S = a.nextChunkPayload();
+                    S.length === 0 ? l = !0 : v.push(Midi.sendAndReceiveTeSysexBySerial(e, dt.DFU, S, null))
+                }
+                if (v.length > 0 && (await Promise.all(v),
+                r(a.percent(), "transfer")),
+                l)
+                    break
+            }
+            let A = new Date
+              , p = v => {
+                if (v.data.length > 1) {
+                    let S = S2(v.data.subarray(1)).match(/\[(.*)\]/);
+                    if (!S)
+                        return;
+                    r(v.data[0], S[1])
+                }
+            }
+              , m = await Midi.sendAndReceiveTeSysexBySerial(e, dt.DFU, [dt.DFU_PERFORM], p);
+            await E2(200),
+            m = await Midi.sendAndReceiveTeSysexBySerial(e, dt.DFU, [dt.DFU_EXIT], null),
+            r(-1, "rebooting");
+            let y = (await Midi.awaitDeviceReboot(e)).metadata.os_version;
+            if (s !== y && s !== "0.0.0" && s !== "0.1.0")
+                throw new Error(`upgrade to ${s} failed!`)
+        }
+    }
+      , E1 = new P2
+      , D2 = {
+        perform: async (e, t, r) => await E1.perform(e, t, r),
+        firmware_info: async e => await E1.firmware_info(e)
+    }
