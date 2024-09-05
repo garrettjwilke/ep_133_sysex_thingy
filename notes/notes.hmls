@@ -1,0 +1,65 @@
+samples are 46875 sample rate
+
+using 'sox' audio tool, you can convert your wav file to 46875:
+
+```
+sox INPUT_FILE.wav -c 1 -r 46875 -b 16 OUTPUT_FILE.wav
+```
+
+NOTE: the `-c 1` flag set's the audio to mono.
+
+importing the converted wav file into the EP-133 sample tool will add a header.
+the original header looks like this:
+
+```
+52494646 1C200000 57415645 666D7420
+10000000 01000100 1BB70000 366E0100
+02001000
+```
+
+which looks like this as ASCII:
+
+```
+RIFF WAVEfmt ·6n
+```
+
+the EP-133 sample tool adds the following header:
+```
+52494646 00210000 57415645 666D7420
+10000000 01000100 1BB70000 366E0100
+02001000 736D706C 24000000 00000000
+00000000 00000000 3C000000 00000000
+00000000 00000000 00000000 00000000
+4C495354 B0000000 494E464F 544E4745
+A4000000 7B22736F 756E642E 706C6179
+6D6F6465 223A226F 6E657368 6F74222C
+22736F75 6E642E72 6F6F746E 6F746522
+3A36302C 22736F75 6E642E70 69746368
+223A302C 22736F75 6E642E70 616E223A
+302C2273 6F756E64 2E616D70 6C697475
+6465223A 3130302C 22656E76 656C6F70
+652E6174 7461636B 223A302C 22656E76
+656C6F70 652E7265 6C656173 65223A32
+35352C22 74696D65 2E6D6F64 65223A22
+6F666622 7D000000
+```
+
+which looks like this in ASCII (i formatted it and added whitespace):
+
+```
+RIFF!WAVEfmt ·6nsmpl$
+<LIST°INFOTNGE¤{
+  "sound.playmode":"oneshot",
+  "sound.rootnote":60,
+  "sound.pitch":0,
+  "sound.pan":0,
+  "sound.amplitude":100,
+  "envelope.attack":0,
+  "envelope.release":255,
+  "time.mode":"off"
+}
+```
+
+everything else in the wav file is exactly the same.
+
+sending sounds to the EP-133 will require adding this header to the wav before sending.
