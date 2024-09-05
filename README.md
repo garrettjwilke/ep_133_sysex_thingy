@@ -2,6 +2,8 @@
 
 check the `notes` folder for documentation i have found. i also left notes on wav formatting in the notes folder `notes.hmls`.
 
+---
+
 the `syx` folder has several working `.syx` files that do various things to the EP-133 without the sample tool.
 you can trigger sounds (from pads or from internal memory not assigned to a pad).
 you can also delete sounds from memory and add a sound.
@@ -15,4 +17,6 @@ there are actually several different applications to send `.syx` files, but this
 ```
 sendmidi dev 'EP-133' syf syx/send_kick_to_011/send_kick.syx
 ```
+
+after the transfer completes, you will have a new wav in sound slot `011` named `kick_01.wav`.
 
