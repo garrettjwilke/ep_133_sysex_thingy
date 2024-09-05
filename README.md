@@ -1,6 +1,6 @@
 # EP-133 MIDI SysEx Thingy
 
-check the `notes` folder for documentation i have found. i also left notes on wav formatting in the notes folder `notes.hmls`.
+check the `notes` folder for documentation i have found. i also left notes on wav formatting in `notes/notes.hmls`.
 
 ---
 
