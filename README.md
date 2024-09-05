@@ -14,6 +14,7 @@ you can send each individual one in order, or you can just send the single `send
 to send a `.syx` file to the EP-133, you will need [SendMIDI](https://github.com/gbevin/SendMIDI).
 there are actually several different applications to send `.syx` files, but this one uses the terminal and is simple to use:
 
+run from the base directory of this repo:
 ```
 sendmidi dev 'EP-133' syf syx/send_kick_to_011/send_kick.syx
 ```
