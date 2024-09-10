@@ -30,7 +30,9 @@ there are several other syx files in the `syx` directory that do various things.
   * the `switch_to_project_6.syx` file shows an example of how to instantly switch to project 6.
   * the `delete_sample_001.syx` file will literally erase whatever sample is in slot 011 on your EP-133.
 
+
 there are many more that i have added since and i can't document all of them. i hope this data is useful.
+
 ---
 
 the `sounds` directory contains a directory called `original` and another called `from_ep_133`.
