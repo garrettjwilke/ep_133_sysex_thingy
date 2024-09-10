@@ -13,8 +13,8 @@ you can send each individual one in order, or you can just send the single `send
 
 to send a `.syx` file to the EP-133, you will need [SendMIDI](https://github.com/gbevin/SendMIDI).
 
-WARNING: this will overwrite sounds 1, 2, 3, 4!
-### WARNING 2: use at your own risk. i take no responsibility for any damage done to your device
+### WARNING : use at your own risk. i take no responsibility for any damage done to your device
+### this will overwrite sounds 1, 2, 3, 4!
 
 run from the base directory of this repo:
 ```
