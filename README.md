@@ -12,7 +12,6 @@ the `syx/send_kick_to_011/` directory has a set of individual commands (in `.syx
 you can send each individual one in order, or you can just send the single `send_kick.syx` file. the `send_kick.syx` file contains every command to transfer a wav file into one single file.
 
 to send a `.syx` file to the EP-133, you will need [SendMIDI](https://github.com/gbevin/SendMIDI).
-there are actually several different applications to send `.syx` files, but this one uses the terminal and is simple to use:
 
 WARNING: this will overwrite sounds 1, 2, 3, 4!
 ### WARNING 2: use at your own risk. i take no responsibility for any damage done to your device
@@ -23,6 +22,8 @@ sendmidi dev 'EP-133' syf syx/send_1234.syx
 ```
 
 after the transfer completes, there will be a kick, snare, hat, and sample in sound slots 001,002,003,004 respectively.
+
+you can also use a GUI sysex application called [SysEx Drop](https://github.com/sourcebox/sysex-drop/releases/tag/v1.4.0). just drag one of the `.syx` files into it and make sure to set it to send data to the EP-133.
 
 there are several other syx files in the `syx` directory that do various things. 
   * the `init.syx` file should be added to be beginning of any command that involves sending a sound wav to the device. the .syx files provided in this repo already have this init included, so you can run any .syx file in this repo without worry of error. but if you wanted to create your own wav transfer, the `init.syx` should be appended to the beginning of the transfer.
